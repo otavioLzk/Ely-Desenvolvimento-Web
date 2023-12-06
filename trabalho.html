@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Convidados</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #222;
+            color: #fff;
+        }
+
+        h2 {
+            color: #e74c3c;
+        }
+
+        form {
+            margin-bottom: 20px;
+            background-color: #333;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #444;
+            color: #fff;
+        }
+
+        button {
+            cursor: pointer;
+            padding: 10px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+
+        th {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        button {
+            cursor: pointer;
+            padding: 10px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Gerenciamento de Convidados</h2>
+
+    <form id="guestForm">
+        <label for="name">Nome:</label>
+        <input type="text" id="name" required>
+
+        <label for="surname">Sobrenome:</label>
+        <input type="text" id="surname" required>
+
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" required>
+
+        <label for="phone">Número de Telefone:</label>
+        <input type="tel" id="phone" required>
+
+        <label for="confirmation">Confirmação de Presença:</label>
+        <select id="confirmation" required>
+            <option value="sim">Sim</option>
+            <option value="nao">Não</option>
+        </select>
+
+        <button type="button" onclick="addGuest()">Adicionar Convidado</button>
+    </form>
+
+    <table id="guestTable">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Sobrenome</th>
+                <th>E-mail</th>
+                <th>Número de Telefone</th>
+                <th>Confirmação de Presença</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        function addGuest() {
+            const name = document.getElementById('name').value;
+            const surname = document.getElementById('surname').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const confirmation = document.getElementById('confirmation').value;
+
+            const guest = {
+                name,
+                surname,
+                email,
+                phone,
+                confirmation,
+            };
+
+            let guests = JSON.parse(localStorage.getItem('guests')) || [];
+            guests.push(guest);
+            localStorage.setItem('guests', JSON.stringify(guests));
+
+            updateGuestTable();
+            clearForm();
+        }
+
+        function updateGuestTable() {
+            const tableBody = document.querySelector('#guestTable tbody');
+            tableBody.innerHTML = '';
+
+            const guests = JSON.parse(localStorage.getItem('guests')) || [];
+
+            guests.forEach(guest => {
+                const row = tableBody.insertRow();
+                for (const key in guest) {
+                    const cell = row.insertCell();
+                    cell.textContent = guest[key];
+                }
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Excluir';
+                deleteButton.addEventListener('click', () => deleteGuest(guest));
+                row.insertCell().appendChild(deleteButton);
+            });
+        }
+
+        function deleteGuest(guest) {
+            let guests = JSON.parse(localStorage.getItem('guests')) || [];
+            guests = guests.filter(g => g !== guest);
+            localStorage.setItem('guests', JSON.stringify(guests));
+
+            updateGuestTable();
+        }
+
+        function clearForm() {
+            document.getElementById('guestForm').reset();
+        }
+
+        // Initial table update
+        updateGuestTable();
+    </script>
+</body>
+</html>
